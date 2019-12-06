@@ -10,7 +10,7 @@ There are two steps required:
 
 ## Overview of code structure
 
-# /src/
+### /src/
 This folder includes the source code, which is split up into three types of files, not including scratch work:
 
 * Produce figures
@@ -21,16 +21,16 @@ This folder includes the source code, which is split up into three types of file
   * PurdueProject.m is a class object with various properties, e.g. the data file locations
 
 
-# /intermediate/
+### /intermediate/
 This folder includes intermediate data products, some of which take hours (on my laptop) to reproduce. The analysis functions needed to reproduce these files are not included yet.
 
 
 ## Running the code
 
-# Plots
+### Plots
 All of the plots should be reproducible via the various sections of Purdue_AGU_plots.m, once the "Getting Started" section has been completed.
 
-# Intermediate data and analysis
+### Intermediate data and analysis
 The intermediate data need additional analysis functions that are not included yet. 
 
 

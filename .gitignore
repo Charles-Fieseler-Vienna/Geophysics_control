@@ -1,0 +1,14 @@
+# Data files
+*.csv
+*.txt
+*.TXT
+*.zip
+
+# Presentation related files
+*.fig
+*.pptx
+*.png
+*.avi
+
+# Scratch work
+*.mlx

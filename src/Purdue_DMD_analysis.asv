@@ -16,8 +16,7 @@ num_modes = 6;
 intermediate_fname = 'test.mat';
 
 % Class with preprocessing functions
-data_foldername = '';
-pp = PurdueProject(data_foldername);
+pp = PurdueProject();
 
 %% Get filenames
 %---------------------------------------------

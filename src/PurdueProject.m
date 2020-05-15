@@ -31,19 +31,19 @@ classdef PurdueProject
     
     properties (SetAccess = private)
         % Go straight to dropbox instead
-%         dat_foldername = "../dat/ae_data/"
-        dat_foldername = "C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/"
+%         dat_foldername = '../dat/ae_data/'
+        dat_foldername = 'C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/'
         dat_subfolders = {...
-            "Distributed/Sample_490/", ...
-            "Localized/Localized481_waveforms/", ...
-            "Mortar/Mortar470_waveforms/", ...
-            "Sandstone/Sandstone1/"}
+            'Distributed/Sample_490/', ...
+            'Localized/Localized481_waveforms/', ...
+            'Mortar/Mortar470_waveforms/', ...
+            'Sandstone/Sandstone1/'}
         
         % For intermediate variables
-        intermediate_foldername = "../intermediate_raw/"
+        intermediate_foldername = '../intermediate_raw/'
         
         %
-        presentation_foldername = "C:/Users/charl/Documents/Current_work/Presentations/Purdue/";
+        presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/Purdue/';
     end
     
     properties (Dependent)
@@ -51,6 +51,27 @@ classdef PurdueProject
         mortar_fnames
         localized_fnames
         distributed_fnames
+    end
+    
+    methods
+        function self = PurdueProject(dat_foldername, dat_subfolders)
+            if exist('dat_foldername', 'var') && ~isempty(dat_foldername)
+                self.dat_foldername = dat_foldername;
+            else
+                disp('Using default data location')
+            end
+            if exist('dat_subfolders', 'var') && ~isempty(dat_subfolders)
+                self.dat_subfolders = dat_subfolders;
+            end
+            
+            disp('')
+            fprintf('\n================================================\n')
+            fprintf('Initializing project with data in parent folder: \n%s\n',...
+                self.dat_foldername)
+            fprintf('And subfolders: \n')
+            fprintf('%s\n',self.dat_subfolders{:})
+            disp('')
+        end
     end
     
     methods % For dependent variables
@@ -132,7 +153,7 @@ classdef PurdueProject
         function [dat, kept_dat_ind] = ...
                 filter_active_sensing(~, fnames, max_activity_thresh)
             % Events that have activity near the maximum level of 10 are
-            % actually "Active Sensing Tests" (ASTs), as opposed to
+            % actually 'Active Sensing Tests' (ASTs), as opposed to
             % spontaneous events
             assert(iscell(fnames),...
                 'Must pass cell array of filenames')

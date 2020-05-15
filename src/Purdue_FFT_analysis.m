@@ -1,13 +1,22 @@
-
-
 %% Moving window DFT to get frequencies
 %---------------------------------------------
+%% Analysis settings
+
+% Which input files
+% which_dataset = 'mortar_fnames';
+which_dataset = 'localized_fnames';
+% which_dataset = 'distributed_fnames';
+num_files = 10;
+
+% Intermediate results
+intermediate_fname = 'test.mat';
+
+% Class with preprocessing functions
+data_foldername = '';
+pp = PurdueProject(data_foldername);
+
 %% Get filenames
 %---------------------------------------------
-pp = PurdueProject();
-which_dataset = 'mortar_fnames';
-% which_dataset = 'localized_fnames';
-% which_dataset = 'distributed_fnames';
 fnames = pp.(which_dataset);
 if strcmp(which_dataset, 'localized_fnames')
     [all_dat, kept_ind] = pp.filter_by_activity(fnames);
@@ -18,7 +27,7 @@ end
 %---------------------------------------------
 %% Get spectrogram
 %---------------------------------------------
-num_files = length(kept_ind);
+% num_files = length(kept_ind);
 all_dft = zeros(1024, 30, num_files);
 
 for i = 1:num_files
@@ -66,12 +75,14 @@ title(sprintf('Non-outlier Frequency Peaks in initial window for dataset %s',whi
 %---------------------------------------------
 %% SAVE INTERMEDIATES
 %---------------------------------------------
-% fname = pp.intermediate_foldername+"distributed_fft.mat";
-fname = pp.intermediate_foldername+"mortar_fft.mat";
-% fname = pp.intermediate_foldername+"localized_fft.mat";
+fname = [pp.intermediate_foldername,intermediate_fname];
 
 % save(fname, 'kept_ind', 'all_locs', 'all_peaks', 'all_dft', '-v7.3');
 save(fname, 'f', 'kept_ind', 'all_locs', 'all_peaks', '-v7.3');
+
+
+disp('Intermediate data saved')
+error('The following code is for visualization; only run if interested')
 
 %---------------------------------------------
 %% Find recurrence

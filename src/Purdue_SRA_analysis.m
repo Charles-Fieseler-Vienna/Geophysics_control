@@ -1,5 +1,10 @@
 %% Do SRA and compare eigenvalues and control signals
 %---------------------------------------------
+
+% Initialize project
+data_foldername = '';
+pp = PurdueProject();
+
 %% Get filenames
 %---------------------------------------------
 which_dataset = 'mortar_fnames';

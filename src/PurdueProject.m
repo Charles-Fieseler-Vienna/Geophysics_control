@@ -32,18 +32,30 @@ classdef PurdueProject
     properties (SetAccess = private)
         % Go straight to dropbox instead
 %         dat_foldername = '../dat/ae_data/'
-        dat_foldername = 'C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/'
+        dat_foldername = "C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/"
         dat_subfolders = {...
-            'Distributed/Sample_490/', ...
-            'Localized/Localized481_waveforms/', ...
-            'Mortar/Mortar470_waveforms/', ...
-            'Sandstone/Sandstone1/'}
+            "Distributed/Sample_490/", ...
+            "Localized/Localized481_waveforms/", ...
+            "Mortar/Mortar470_waveforms/", ...
+            "Sandstone/Sandstone1/",...
+            "borehole_data_11_17/wvms/"}
+        
+        dat_foldername2 = "C:/Users/charl/Dropbox/Kutz_SINDY/LCM_v5/examples_with_data/CementcubeData/"
+        dat_subfolders2 = {...
+            "05MHz-06262020/r/", ...
+            "05MHz-06262020/t/", ...
+            "1MHz-06262020/r/", ...
+            "1MHz-06262020/t/", ...
+            "5MHz-06262020/r/", ...
+            "5MHz-06262020/t/", ...
+            "10MHz-06252020/r/", ...
+            "10MHz-06252020/t/"}
         
         % For intermediate variables
         intermediate_foldername = '../intermediate_raw/'
         
         %
-        presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/Purdue/';
+        presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/AGU_2020/';
     end
     
     properties (Dependent)
@@ -51,6 +63,7 @@ classdef PurdueProject
         mortar_fnames
         localized_fnames
         distributed_fnames
+        
     end
     
     methods
@@ -71,6 +84,12 @@ classdef PurdueProject
             fprintf('And subfolders: \n')
             fprintf('%s\n',self.dat_subfolders{:})
             disp('')
+        end
+        
+        function out = get_borehole_fnames(self, ind)
+            fname = self.dat_foldername2 + ...
+                self.dat_subfolders2{ind};
+            out = self.get_fnames(fname);
         end
     end
     
@@ -96,18 +115,38 @@ classdef PurdueProject
             
         function out = get.localized_fnames(self)
             % Gets an example localized data file
-            fname = self.dat_foldername + self.dat_subfolders{2};
+            fname = string(self.dat_foldername) + ...
+                string(self.dat_subfolders{2});
             out = self.get_fnames(fname);
         end
+        
+%         function out = get.borehole_fnames(self)
+%             % Gets borehole data
+%             fname = string(self.dat_foldername) + ...
+%                 string(self.dat_subfolders{5});
+%             out = self.get_fnames(fname);
+%         end
         
         function out = get_fnames(~, fname)
             tmp = dir(fname);
             tmp = tmp(3:end-2); % Last two are text files
             out = cell(size(tmp));
             for i = 1:length(tmp)
-                out{i} = fname + tmp(i).name;
+                out{i} = string(fname) + string(tmp(i).name);
             end
-            out = out(cellfun(@(x) contains(x, '.csv'), out));
+            out_csv = out(cellfun(@(x) contains(x, '.csv'), out));
+            if isempty(out_csv)
+                % For borehole data
+                out_txt = out(cellfun(@(x) contains(x, '.txt'), out));
+                if isempty(out_txt)
+                    error("Found no .csv or .txt files")
+                else
+                    out = out_txt;
+                end
+            else
+                out = out_csv;
+            end
+            
         end
     end
     

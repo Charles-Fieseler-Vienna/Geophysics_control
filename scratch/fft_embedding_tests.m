@@ -172,20 +172,54 @@ title('Filtered data')
 %% Test: TONS of embeddings
 
 % Augment with (excessive) delays
-num_delays = 2;
-X_embed = time_delay_embed(X_raw(1,:), num_delays);
+num_delays_vec = [2, 4, 10];
+for i = 1:length(num_delays_vec)
+    num_delays = num_delays_vec(i);
+    
+    X_embed = time_delay_embed(X_raw(1,:), num_delays);
 
-% Test: What is the embedded residual?
-X1 = X_embed(:, 1:end-1);
-X2 = X_embed(:, 2:end);
-A2 = X2/X1;
+    % Test: What is the embedded residual?
+    X1 = X_embed(:, 1:end-1);
+    X2 = X_embed(:, 2:end);
+    A2 = X2/X1;
 
-res2 = X2 - A2*X1;
+    res2 = X2 - A2*X1;
 
-figure;
-subplot(2,1,1)
-plot(res2')
-title(sprintf('%d-delay embedded residual', num_delays))
-subplot(2,1,2)
-plot(U(num_delays:end))
-title('True controller (offset to align)')
+    figure;
+    subplot(2,1,1)
+    plot(res2')
+    title(sprintf('%d-delay embedded residual', num_delays))
+    subplot(2,1,2)
+    plot(U(num_delays:end))
+    title('True controller (offset to align)')
+end
+
+%% Plot integral of the embedded signal as well
+
+% Augment with (excessive) delays
+num_delays_vec = [2, 4, 10];
+for i = 1:length(num_delays_vec)
+    num_delays = num_delays_vec(i);
+    
+    X_embed = time_delay_embed(X_raw(1,:), num_delays);
+
+    % Test: What is the embedded residual?
+    X1 = X_embed(:, 1:end-1);
+    X2 = X_embed(:, 2:end);
+    A2 = X2/X1;
+
+    res2 = X2 - A2*X1;
+
+    figure;
+    subplot(3,1,1)
+    plot(res2')
+    title(sprintf('%d-delay embedded residual', num_delays))
+    
+    subplot(3,1,2)
+    plot(U(num_delays:end))
+    title('True controller (offset to align)')
+    
+    subplot(3,1,3)
+    plot(cumsum(res2'))
+    title('Integrated learned controller')
+end

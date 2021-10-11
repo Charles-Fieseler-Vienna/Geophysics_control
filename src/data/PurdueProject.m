@@ -56,6 +56,7 @@ classdef PurdueProject
         
         %
         presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/AGU_2020/';
+        paper_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/Purdue_analysis_git/figures_paper/';
     end
     
     properties (Dependent)

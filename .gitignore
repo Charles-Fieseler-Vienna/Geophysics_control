@@ -12,3 +12,7 @@
 
 # Scratch work
 *.mlx
+*.jpg
+figures_paper/
+intermediate_raw/
+src/Old/

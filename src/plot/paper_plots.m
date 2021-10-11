@@ -2,8 +2,6 @@
 %%
 pp = PurdueProject();
 
-fig_opt = {'DefaultAxesFontSize', 24, 'WindowState', 'Maximized'};
-
 offsets = normrnd(0, 0.05, 250, 1);
 ts = 0.5*(1:401);
 ts2 = 0.5*(1:393);
@@ -14,122 +12,160 @@ error("Please run individual sections")
 %% Intro
 %%
 
-%% Plot 1: 3 time series
-fname = "mortar_ex1";
-load(pp.intermediate_foldername + fname + ".mat")
+%% Figure 1: All about mortar
+tikz_opt = {'width', '0.4\textwidth', 'height', '0.2\textheight'};
+fig_opt = {'DefaultAxesFontSize', 24, 'WindowState', 'Maximized'};
+line_opt = {'LineWidth',1};
 
-f1 = figure(fig_opt{:});
-plot(ts, X, 'Linewidth', 2)
-title("Example Mortar (No Clay) Event")
-xlim([1,200])
-ylabel('Amplitude (Volts)')
-xlabel('Time (micro seconds)')
+%% Panel 1/4
 
-saveas(f1, pp.presentation_foldername + "mortar_intro" + ".png");
-
-%
-fname = "distributed_ex1";
-load(pp.intermediate_foldername + fname + ".mat")
-
-f1 = figure(fig_opt{:});
-plot(ts, X, 'Linewidth', 2)
-title("Example Distributed Clay Event")
-xlim([1,200])
-ylabel('Amplitude (Volts)')
-xlabel('Time (micro seconds)')
-
-saveas(f1, pp.presentation_foldername + "distributed_intro" + ".png");
-
-%
-fname = "localized_inset1_multi";
-load(pp.intermediate_foldername + fname + ".mat")
-
-f1 = figure(fig_opt{:});
-plot(ts, X, 'Linewidth', 2)
-title("Example Localized Clay Event")
-xlim([1,200])
-ylabel('Amplitude (Volts)')
-xlabel('Time (micro seconds)')
-
-saveas(f1, pp.presentation_foldername + "localized_intro" + ".png");
-
-%% Mortar
-%%
-
-%% Plot 1: Example good dataset
 f1 = figure(fig_opt{:});
 
 fname = "mortar_ex1";
 load(pp.intermediate_foldername + fname + ".mat")
 
 subplot(211)
-plot(ts, X, 'Linewidth', 2)
+plot(ts, X, line_opt{:})
 hold on
-plot(ts2, X_recon, 'LineWidth',2)
-title("Example Mortar Event (Successful Reconstruction)")
-legend({'Data', 'Reconstruction'}, 'Location', 'Southeast')
+plot(ts2, X_recon, line_opt{:})
+% title("Example Mortar Event (Successful Reconstruction)")
+leg = legend({'Data', 'Reconstruction'}, 'Location', 'Southeast');
+% set(leg,'color','none');
 xlim([1,200])
-ylabel('Amplitude (Volts)')
+ylabel('Amp (Volts)')
 
 subplot(212)
-plot(ts3, U, 'LineWidth',2)
+plot(ts3, U, line_opt{:})
 legend('Learned Control Signal')
 xlim([1,200])
 xlabel('Time (micro seconds)')
-ylabel('Amplitude (A.U.)')
+ylabel('Amp (A.U.)')
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
 %
-%% Plot 2: Example good dataset
+out_fname = pp.paper_foldername + "fig1/" + fname;
+saveas(f1, out_fname + ".png");
+
+cleanfigure();
+matlab2tikz(char(out_fname + ".tex"), tikz_opt{:});
+
+close(f1);
+%% Panel 2: another example
 f2 = figure(fig_opt{:});
 
 fname = "mortar_ex2";
 load(pp.intermediate_foldername + fname + ".mat")
 
 subplot(211)
-plot(ts, X, 'Linewidth', 2)
+plot(ts, X, line_opt{:})
 hold on
-plot(ts2, X_recon, 'LineWidth',2)
-title("Example Mortar Event (Successful Reconstruction)")
-legend({'Data', 'Reconstruction'}, 'Location', 'Southeast')
+plot(ts2, X_recon, line_opt{:})
+% title("Example Mortar Event (Successful Reconstruction)")
+% legend({'Data', 'Reconstruction'}, 'Location', 'Southeast')
 xlim([1,200])
-ylabel('Amplitude (Volts)')
+ylabel('Amp (Volts)')
 
 subplot(212)
-plot(ts3, U, 'LineWidth',2)
-legend('Learned Control Signal')
+plot(ts3, U, line_opt{:})
+% legend('Learned Control Signal')
 xlim([1,200])
 xlabel('Time (micro seconds)')
-ylabel('Amplitude (A.U.)')
+ylabel('Amp (A.U.)')
 
-saveas(f2, pp.presentation_foldername + fname + ".png");
-%% Plot 3: Reconstruction accuracy
+%
+out_fname = pp.paper_foldername + "fig1/" + fname;
+saveas(f2, out_fname + ".png");
+
+cleanfigure();
+matlab2tikz(char(out_fname + ".tex"), tikz_opt{:});
+
+close(f2);
+%% Panel 3: Reconstruction accuracy
 f3 = figure(fig_opt{:});
 
 fname = "mortar_acc";
 load(pp.intermediate_foldername + fname + ".mat")
 
 violinplot(accuracy)
-title("Mortar Events Are Consistently Reconstructed")
+% title("Consistent Reconstruction")
 ylabel("Reconstruction Accuracy")
 xticklabels([])
+ylim([0,1])
 
-saveas(f3, pp.presentation_foldername + fname + ".png");
+%
+out_fname = pp.paper_foldername + "fig1/" + fname;
+saveas(f3, out_fname + ".png");
+
+cleanfigure();
+matlab2tikz(char(out_fname + ".tex"), tikz_opt{:});
+close(f3);
 %% Plot 4: Scatterplot
 f4 = figure(fig_opt{:});
 
 fname = "mortar_scatter";
 load(pp.intermediate_foldername + fname + ".mat")
 
-scatter(accuracy, num_events, '*', 'LineWidth',2)
-xlabel('Reconstruction Accuracy')
-ylabel('Number of Control Signals')
-title("Mortar Reconstructions Require Few Control Signals")
-ylim([0,5])
-xlim([0,1])
+scatter(num_events, accuracy, '*', 'LineWidth',2)
+ylabel('Reconstruction Accuracy')
+xlabel('Number of Control Signals')
+% title("Mortar Reconstructions Require Few Control Signals")
+ylim([0,1])
+xlim([0,5])
 
-saveas(f4, pp.presentation_foldername + fname + ".png");
+%
+out_fname = pp.paper_foldername + "fig1/" + fname;
+saveas(f4, out_fname + ".png");
 
+cleanfigure();
+matlab2tikz(char(out_fname + ".tex"), tikz_opt{:});
+
+close(f4);
+
+
+%% Figure 1 ALT: violin + examples
+
+f1a = figure(fig_opt{:});
+fname = "mortar_acc";
+load(pp.intermediate_foldername + fname + ".mat")
+acc_m = accuracy;
+subplot(121)
+violinplot([acc_m], {"Mortar"})
+ylabel("Reconstruction Accuracy")
+ylim([0, 0.6])
+title("Variance Explained")
+
+% Load all raw data
+fname = "mortar_all_raw_data";
+load(pp.intermediate_foldername + fname + ".mat")
+
+example_ind = [6, 2, 1, 18, 99];
+num_rows = length(example_ind);
+
+for i = 1:num_rows
+    i_subplot = 2*i;
+    subplot(num_rows, 2, i_subplot);
+    
+    i_data = example_ind(i);
+    
+    X = all_X(i_data,:);
+    X_recon = all_X_reconstructed(i_data,:);
+    U = all_paths{i_data}.U;
+    
+    plot(ts, X, line_opt{:})
+    hold on
+    plot(ts2, X_recon, line_opt{:})
+    xlim([1,200])
+    xticks([])
+    yticks([])
+    
+    this_accuracy = acc_m(i_data);
+    
+    title_str = sprintf("%.0f %s", 100*this_accuracy, "%");
+    title(title_str)
+end
+
+%
+out_fname = pp.paper_foldername + "fig1/" + "alternate_violin";
+saveas(f1a, out_fname + ".png");
 
 %% Distributed
 %%
@@ -156,7 +192,7 @@ xlim([1,200])
 xlabel('Time (micro seconds)')
 ylabel('Amplitude (A.U.)')
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");
 %
 %% Plot 2: Example "clean packet" dataset
 f2 = figure(fig_opt{:});
@@ -180,7 +216,7 @@ xlim([1,200])
 xlabel('Time (micro seconds)')
 ylabel('Amplitude (A.U.)')
 
-saveas(f2, pp.presentation_foldername + fname + ".png");
+saveas(f2, pp.paper_foldername + fname + ".png");
 %
 %% Plot 3: Example "messy packet" dataset
 f3 = figure(fig_opt{:});
@@ -203,7 +239,7 @@ xlim([1,200])
 xlabel('Time (micro seconds)')
 ylabel('Amplitude (A.U.)')
 
-saveas(f3, pp.presentation_foldername + fname + ".png");
+saveas(f3, pp.paper_foldername + fname + ".png");
 %
 %% Plot 4: Reconstruction accuracy
 f3 = figure(fig_opt{:});
@@ -219,7 +255,7 @@ violinplot([acc_m, acc_d], {"Mortar", "Distributed"})
 ylabel("Reconstruction Accuracy")
 title("Distributed Events Are Poorly Reconstructed")
 
-saveas(f3, pp.presentation_foldername + "distributed_acc" + ".png");
+saveas(f3, pp.paper_foldername + "distributed_acc" + ".png");
 %
 %% Plot 5: Scatterplot (with mortar as well)
 
@@ -256,8 +292,8 @@ xlabel('Reconstruction accuracy')
 ylabel('Number of Events')
 legend('Mortar', 'Distributed')
 
-saveas(f4, pp.presentation_foldername + "distributed_scatter" + ".png");
-saveas(f5, pp.presentation_foldername + "distributed_mortar_scatter" + ".png");
+saveas(f4, pp.paper_foldername + "distributed_scatter" + ".png");
+saveas(f5, pp.paper_foldername + "distributed_mortar_scatter" + ".png");
 %
 %% Plot 6: Inset good examples
 
@@ -268,7 +304,7 @@ load(pp.intermediate_foldername + fname + ".mat")
 title_str = "";
 plot_reconstruction_helper
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");
 
 
 % Load two datasets
@@ -278,7 +314,59 @@ saveas(f1, pp.presentation_foldername + fname + ".png");
 % title_str = "";
 % plot_reconstruction_helper
 % 
-% saveas(f1, pp.presentation_foldername + fname + ".png");
+% saveas(f1, pp.paper_foldername + fname + ".png");
+
+
+%% Figure 2 ALT: violin + examples
+
+f1a = figure(fig_opt{:});
+fname = "distributed_acc";
+load(pp.intermediate_foldername + fname + ".mat")
+acc_m = accuracy;
+subplot(121)
+violinplot([acc_m], {"Distributed"})
+ylabel("Reconstruction Accuracy")
+ylim([0, 0.6])
+title("Variance Explained")
+
+% Load all raw data
+% fname = "distributed_all_raw_data";
+% load(pp.intermediate_foldername + fname + ".mat")
+
+% example_ind = [1822, 85, 7, 5, 19, 22];
+example_ind = [1822, 85, 7, 5, 22];
+num_rows = length(example_ind);
+num_delays = 10; % TODO: not hardcode
+
+for i = 1:num_rows
+    i_subplot = 2*i;
+    subplot(num_rows, 2, i_subplot);
+    
+    i_data = example_ind(i);
+    
+    X = all_X(i_data,:);
+    X_recon = all_X_reconstructed(i_data,:);
+    U = all_paths{i_data}.U;
+    
+    plot(X(num_delays:end), line_opt{:})
+    hold on
+    plot(X_recon(num_delays:end), line_opt{:})
+    
+    plot(0.025*U - 0.05, line_opt{:})
+    xlim([1,200])
+    xticks([])
+    yticks([])
+    
+    this_accuracy = acc_m(i_data);
+    
+    title_str = sprintf("%.0f %s", 100*this_accuracy, "%");
+    title(title_str)
+end
+
+%
+out_fname = pp.paper_foldername + "fig2/" + "alternate_violin_distributed";
+saveas(f1a, out_fname + ".png");
+
 
 %% Localized
 %%
@@ -301,7 +389,7 @@ violinplot([acc_m, acc_d, acc_l],...
 ylabel("Reconstruction Accuracy")
 title("Localized Events Are Poorly Reconstructed")
 
-saveas(f3, pp.presentation_foldername + "localized_accuracy" + ".png");
+saveas(f3, pp.paper_foldername + "localized_accuracy" + ".png");
 %% Plot 5: Scatterplot (with mortar as well)
 % Load all three datasets
 fname = "localized_scatter";
@@ -344,8 +432,8 @@ xlabel('Reconstruction accuracy')
 ylabel('Number of Events')
 legend('Mortar', 'Distributed', 'Localized')
 
-saveas(f4, pp.presentation_foldername + "localized_scatter" + ".png");
-saveas(f5, pp.presentation_foldername + "localized_distributed_mortar_scatter" + ".png");
+saveas(f4, pp.paper_foldername + "localized_scatter" + ".png");
+saveas(f5, pp.paper_foldername + "localized_distributed_mortar_scatter" + ".png");
 %
 %% Plot 6: Inset
 
@@ -355,7 +443,7 @@ load(pp.intermediate_foldername + fname + ".mat")
 title_str = "Mortar-like event in Distributed";
 plot_reconstruction_helper
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");
 
 %
 fname = "localized_inset2_good";
@@ -364,7 +452,7 @@ load(pp.intermediate_foldername + fname + ".mat")
 title_str = "Mortar-like event in Distributed";
 plot_reconstruction_helper
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");
 %% Plot 7: Multi-event insets
 
 fname = "localized_inset1_multi";
@@ -372,7 +460,7 @@ load(pp.intermediate_foldername + fname + ".mat")
 title_str = "Multiple Control Signals in Distributed";
 plot_reconstruction_helper
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");
 
 %
 fname = "localized_inset2_multi";
@@ -380,4 +468,4 @@ load(pp.intermediate_foldername + fname + ".mat")
 title_str = "Multiple Control Signals in Distributed";
 plot_reconstruction_helper
 
-saveas(f1, pp.presentation_foldername + fname + ".png");
+saveas(f1, pp.paper_foldername + fname + ".png");

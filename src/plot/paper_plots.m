@@ -48,15 +48,17 @@ cmap = colormap(parula(6));
 num_cols = 6;
 
 %
+% Note; the accuracies should be reloaded to keep the indexing aligned
+%
 fname = "mortar_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_m = accuracy;
 acc_targets = [0.55, 0.4, 0.25, 0.1];
-example_ind = get_indices_at_y_level(acc_targets, acc_m);
+example_ind_mortar = get_indices_at_y_level(acc_targets, acc_m);
 inset_subplots = [4, 10, 16, 22];
 x_for_violin_plot = 1;
 plot_time_series_column(all_X, all_X_reconstructed, all_paths,...
-    example_ind, ts, ts2, ts3, acc_m, num_cols,...
+    example_ind_mortar, ts, ts2, ts3, acc_m, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Mortar")
 
@@ -64,11 +66,11 @@ plot_time_series_column(all_X, all_X_reconstructed, all_paths,...
 fname = "distributed_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_targets = [0.4, 0.3, 0.2, 0.1];
-example_ind = get_indices_at_y_level(acc_targets, acc_d);
+example_ind_distributed = get_indices_at_y_level(acc_targets, acc_d);
 inset_subplots = [5, 11, 17, 23];
 x_for_violin_plot = 2;
 plot_time_series_column(all_X, all_X_reconstructed, all_paths,...
-    example_ind, ts, ts2, ts3, acc_d, num_cols,...
+    example_ind_distributed, ts, ts2, ts3, acc_d, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Distributed")
 %
@@ -76,21 +78,29 @@ fname = "localized_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_l = accuracy;
 acc_targets = [0.55, 0.4, 0.25, 0.1];
-example_ind = get_indices_at_y_level(acc_targets, acc_l);
+example_ind_localized = get_indices_at_y_level(acc_targets, acc_l);
 inset_subplots = [6, 12, 18, 24];
 x_for_violin_plot = 3;
 
 plot_time_series_column(all_X, all_X_reconstructed, all_paths,...
-    example_ind, ts, ts2, ts3, acc_l, num_cols,...
+    example_ind_localized, ts, ts2, ts3, acc_l, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     true, "Localized")
 
 set_times_new_roman
 %
+
 if actually_save
     out_fname = pp.paper_foldername + "fig2/" + "alternate_violin_distributed";
     saveas(figure6, out_fname + ".png");
     saveas(figure6, out_fname + ".pdf");
+    
+    % Also save some metadata
+    out_fname = pp.paper_foldername + "../intermediate_raw/" + "fig6_indices.mat";
+    save(out_fname,...
+        'example_ind_localized',...
+        'example_ind_distributed',...
+        'example_ind_mortar')
 end
 
 %% Figure 7: cannot disentangle events using FFT
@@ -137,11 +147,11 @@ cmap = colormap(parula(6));
 fname = "mortar_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 freq_targets = [2.4e5, 2.3e5, 2.2e5, 2e5];
-example_ind = get_indices_at_y_level(freq_targets, freq_m);
+example_ind_mortar = get_indices_at_y_level(freq_targets, freq_m);
 inset_subplots = [4, 10, 16, 22];
 x_for_violin_plot = 1;
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, freq_m, num_cols,...
+    example_ind_mortar, ts, ts2, ts3, freq_m, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Mortar")
 
@@ -149,11 +159,11 @@ plot_time_series_column(all_X, [], [],...
 fname = "distributed_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 freq_targets = [2.4e5, 2.2e5, 1.4e5, 1e5];
-example_ind = get_indices_at_y_level(freq_targets, freq_d);
+example_ind_distributed = get_indices_at_y_level(freq_targets, freq_d);
 inset_subplots = [5, 11, 17, 23];
 x_for_violin_plot = 2;
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, freq_d, num_cols,...
+    example_ind_distributed, ts, ts2, ts3, freq_d, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Distributed")
 
@@ -161,11 +171,11 @@ plot_time_series_column(all_X, [], [],...
 fname = "localized_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 freq_targets = [2.4e5, 2.2e5, 1.4e5, 1e5];
-example_ind = get_indices_at_y_level(freq_targets, freq_l);
+example_ind_localized = get_indices_at_y_level(freq_targets, freq_l);
 inset_subplots = [6, 12, 18, 24];
 x_for_violin_plot = 3;
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, freq_l, num_cols,...
+    example_ind_localized, ts, ts2, ts3, freq_l, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Localized")
 
@@ -183,6 +193,13 @@ if actually_save
     % set(gcf, 'color', 'none');
     % export_fig(out_basename + ".pdf");
     % export_fig(out_basename + ".png");
+    
+    % Also save some metadata
+    out_fname = pp.paper_foldername + "../intermediate_raw/" + "fig7_indices.mat";
+    save(out_fname,...
+        'example_ind_localized',...
+        'example_ind_distributed',...
+        'example_ind_mortar')
 end
 
 
@@ -276,33 +293,33 @@ ylabel("Variance Explained")
 fname = "mortar_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_targets = [0.5, 0.4, 0.2, 0.1];
-example_ind = get_indices_at_y_level(acc_targets, acc_m);
+example_ind_mortar = get_indices_at_y_level(acc_targets, acc_m);
 inset_subplots = [4, 10, 16, 22];
-x_for_violin_plot = freq_m(example_ind);
+x_for_violin_plot = freq_m(example_ind_mortar);
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, acc_m, num_cols,...
+    example_ind_mortar, ts, ts2, ts3, acc_m, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Mortar", false, 's')
 %
 fname = "distributed_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_targets = [0.5, 0.3, 0.1, 0.0];
-example_ind = get_indices_at_y_level(acc_targets, acc_d);
+example_ind_distributed = get_indices_at_y_level(acc_targets, acc_d);
 inset_subplots = [5, 11, 17, 23];
-x_for_violin_plot = freq_d(example_ind);
+x_for_violin_plot = freq_d(example_ind_distributed);
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, acc_d, num_cols,...
+    example_ind_distributed, ts, ts2, ts3, acc_d, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Distributed", false, 'o')
 %
 fname = "localized_all_raw_data";
 load(pp.intermediate_foldername + fname + ".mat")
 acc_targets = [0.5, 0.3, 0.1, 0.0];
-example_ind = get_indices_at_y_level(acc_targets, acc_l);
+example_ind_localized = get_indices_at_y_level(acc_targets, acc_l);
 inset_subplots = [6, 12, 18, 24];
-x_for_violin_plot = freq_l(example_ind);
+x_for_violin_plot = freq_l(example_ind_localized);
 plot_time_series_column(all_X, [], [],...
-    example_ind, ts, ts2, ts3, acc_l, num_cols,...
+    example_ind_localized, ts, ts2, ts3, acc_l, num_cols,...
     inset_subplots, line_opt, cmap, x_for_violin_plot,...
     false, "Localized", false, 'v')
 
@@ -314,4 +331,11 @@ if actually_save
     out_fname = pp.paper_foldername + "fig4/" + "freq_vs_acc_contour";
     saveas(figure8, out_fname + ".png");
     saveas(figure8, out_fname + ".pdf");
+    
+    % Also save some metadata
+    out_fname = pp.paper_foldername + "../intermediate_raw/" + "fig8_indices.mat";
+    save(out_fname,...
+        'example_ind_localized',...
+        'example_ind_distributed',...
+        'example_ind_mortar')
 end

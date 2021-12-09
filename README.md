@@ -22,7 +22,10 @@ This folder includes the source code, which is split up into three types of file
 
 
 ### /intermediate/
-This folder includes intermediate data products, some of which take hours (on my laptop) to reproduce. The analysis functions needed to reproduce these files are not included yet.
+This folder includes intermediate data products, some of which take hours (on my laptop) to reproduce. 
+The analysis functions needed to reproduce these files are not included yet.
+
+In addition, this contains example indices for the paper subpanels.
 
 
 ## Running the code

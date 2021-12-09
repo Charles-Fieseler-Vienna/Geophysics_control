@@ -17,3 +17,4 @@ figures_paper/
 intermediate_raw/
 src/Old/
 src/external_toolboxes/
+*.asv

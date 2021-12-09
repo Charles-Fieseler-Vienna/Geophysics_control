@@ -34,3 +34,6 @@ All of the plots should be reproducible via the various sections of Purdue_AGU_p
 The intermediate data need additional analysis functions that are not included yet. 
 
 
+## Reproducing specific figures
+
+

@@ -665,10 +665,7 @@ figure;
 plot(this_X(1,:))
 hold on
 plot(xx1(1,:))
-
-
 %% Side test: using _data script
-
 %% Test: density plot
 X = [accuracy_d, num_events_d];
 X2 = [accuracy_m, num_events_m];
@@ -688,7 +685,6 @@ contour(C{1}, C{2}, N', 'k');
 shading interp
 colormap hot
 ylim([1.6,5])
-
 %% Test: GMM model
 X = [accuracy_d, num_events_d/ 10];
 X2 = [accuracy_m, num_events_m/ 10];
@@ -711,7 +707,6 @@ gmm = fitgmdist(X,6, 'SharedCov',true);
 gmPDF = @(x,y) arrayfun(@(x0,y0) pdf(gmm,[x0 y0]),x,y);
 g = gca;
 fcontour(gmPDF,[g.XLim g.YLim], 'r')
-
 %%
 % [best_gmm,all_AIC,all_gmm] = choose_cluster_num(X, 7, {'SharedCov',true});
 opt = {'CovarianceType','diagonal', ...
@@ -719,3 +714,47 @@ opt = {'CovarianceType','diagonal', ...
     'SharedCov',true};
 [gmm,all_AIC,all_gmm] = choose_cluster_num(X, 10, opt);
 
+
+
+
+
+
+
+%% NEW: 10/11/2021
+
+%% Return to power spectrum: can you tell events apart?
+%% Data
+pp = PurdueProject();
+% which_dataset = 'mortar_fnames';
+which_dataset = 'distributed_fnames';
+% which_dataset = 'localized_fnames';
+fnames = pp.(which_dataset);
+% [all_dat, kept_ind] = pp.filter_by_activity(fnames);
+% fnames = fnames(kept_ind);
+
+which_file = 101:251;
+
+read_from_file = @(i) readtable(fnames{i});
+ind = 100:500;
+extract_time_series = @(dat) dat{ind,2}';
+% my_f2 = @(dat) lowpass(dat{:,2}', 0.8);
+% my_f3 = @(X) time_delay_embed(X, num_delays);
+%% Looping
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Iteration %d / %d \n", i, length(which_file))
+    
+    X = read_from_file(which_file(i));
+    X = extract_time_series(X);
+    all_X = [all_X; X];
+%     X = my_f3(X);
+%     all_paths{i} = learn_control_signals(X, settings);
+end
+
+%% 
+
+
+
+%%

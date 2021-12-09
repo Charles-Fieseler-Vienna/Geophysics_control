@@ -152,7 +152,7 @@ save(fname, 'accuracy', 'num_events');
 %% Data 5: ALL raw data
 fname = pp.intermediate_foldername + "mortar_all_raw_data.mat";
 
-save(fname, 'all_X', 'all_X_reconstructed', 'all_paths');
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
 %% Plot
 f1 = figure('DefaultAxesFontSize', 24);
 % plot(remove_isolated_spikes(top_U')'+offsets)
@@ -392,7 +392,7 @@ save(fname, 'X', 'X_recon', 'U');
 %% Data 8: ALL raw data
 fname = pp.intermediate_foldername + "distributed_all_raw_data.mat";
 
-save(fname, 'all_X', 'all_X_reconstructed', 'all_paths');
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
 %% Plot
 f1 = figure('DefaultAxesFontSize', 24);
 % plot(remove_isolated_spikes(top_U')'+offsets)
@@ -456,8 +456,8 @@ my_f1 = @(i) readtable(fnames{i});
 % which_file = 1:length(fnames);
 fprintf('%d files remaining\n', length(fnames))
 %% Test: fewer datasets
-% which_file = 1:250;
-which_file = 1:length(fnames);
+which_file = 1:250;
+% which_file = 1:length(fnames);
 
 % this_window = {10};
 %% Calculate the controllers for each data set
@@ -497,7 +497,8 @@ for i = 1:length(which_file)
     X = my_f2(X);
     this_X = my_f3(X);
     % Get accuracy
-    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U);
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U, ...
+        [], average_with_correlation_coef);
     all_var_explained(i) = this_var;
     all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
     % Get number of control signals
@@ -572,17 +573,17 @@ fname = pp.intermediate_foldername + "localized_inset1_multi.mat";
 
 save(fname, 'X', 'X_recon', 'U');
 
-ex1 = 311;
-X = all_X(ex1,:);
-X_recon = all_X_reconstructed(ex1,:);
-U = all_paths{ex1}.U;
-fname = pp.intermediate_foldername + "localized_inset2_multi.mat";
-
-save(fname, 'X', 'X_recon', 'U');
+% ex1 = 311;
+% X = all_X(ex1,:);
+% X_recon = all_X_reconstructed(ex1,:);
+% U = all_paths{ex1}.U;
+% fname = pp.intermediate_foldername + "localized_inset2_multi.mat";
+% 
+% save(fname, 'X', 'X_recon', 'U');
 %% Data 7: ALL raw data
 fname = pp.intermediate_foldername + "localized_all_raw_data.mat";
 
-save(fname, 'all_X', 'all_X_reconstructed', 'all_paths');
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy', 'kept_ind');
 %% Plot
 f1 = figure('DefaultAxesFontSize', 24);
 % plot(remove_isolated_spikes(top_U')'+offsets)

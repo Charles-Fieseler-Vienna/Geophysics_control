@@ -52,7 +52,7 @@ classdef PurdueProject
             "10MHz-06252020/t/"}
         
         % For intermediate variables
-        intermediate_foldername = '../intermediate_raw/'
+        intermediate_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/Purdue_analysis_git/intermediate_raw/'
         
         %
         presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/AGU_2020/';

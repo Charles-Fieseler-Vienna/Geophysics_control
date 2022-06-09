@@ -1,5 +1,5 @@
 classdef ControlProject
-% Various file paths and whatnot for the Purdue project
+% Various file paths and whatnot for the project
 %
 %
 % INPUTS - none
@@ -31,8 +31,6 @@ classdef ControlProject
     
     properties (SetAccess = private)
         % Go straight to dropbox instead
-%         dat_foldername = '../dat/ae_data/'
-%         dat_foldername = "C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/"
         dat_foldername = "E:/Current_work/Purdue_data/"
         dat_subfolders = {...
             "Distributed/Sample_490/", ...

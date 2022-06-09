@@ -1,4 +1,4 @@
-%% Purdue AGU plots
+%% Exploratory plots
 % Scripts in different sections to generate various plots used in the AGU
 % presentation
 %

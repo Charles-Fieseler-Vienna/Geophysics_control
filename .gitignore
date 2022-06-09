@@ -18,3 +18,6 @@ intermediate_raw/
 src/Old/
 src/external_toolboxes/
 *.asv
+
+# Pycharm
+.idea/*

@@ -15,7 +15,7 @@ intermediate_fname = sprintf('spectrogram_%s.mat', which_dataset);
 
 % Class with preprocessing functions
 data_foldername = '';
-pp = PurdueProject(data_foldername);
+pp = ControlProject(data_foldername);
 %% Get filenames
 %---------------------------------------------
 fnames = pp.(which_dataset);

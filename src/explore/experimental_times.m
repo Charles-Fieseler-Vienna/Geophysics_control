@@ -1,7 +1,7 @@
 %% Get the raw data (experimental times for Chven)
 
 %% Get the indices of the fnames within the list
-pp = PurdueProject();
+pp = ControlProject();
 
 out_fname = pp.paper_foldername + "../intermediate_raw/" + "fig9_indices.mat";
 ind_struct = load(out_fname);

@@ -1,6 +1,6 @@
 %% SHARED
 %% Settings
-pp = PurdueProject();
+pp = ControlProject();
 
 num_delays = 8;
 

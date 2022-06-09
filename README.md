@@ -4,21 +4,28 @@
 ## Getting started
 
 There are two steps required:
-* Run the setup_Purdue_analysis.m file, or manually add the folders to your MATLAB path.
-* Go to /src/PurdueProject.m and change the "dat_foldername" property to point to the location of the data files.
+* Run the setup_control_analysis.m file, or manually add the folders to your MATLAB path.
+* Go to /src/ControlProject.m and change the "dat_foldername" property to point to the location of the data files.
   * In addition, if the subfolders are different than they appear in the dropbox, then the "dat_subfolders" array will need to be updated
 
 ## Overview of code structure
 
 ### src/
-This folder includes the source code, which is split up into three types of files, not including scratch work:
+This folder includes the source code, which is split up into four folders:
 
-* Produce figures
-  * Purdue_AGU_plots.m produces all the plots that are included in the presentation
-* Produce data
-  * Purdue_***_analysis.m produces the intermediate data, saved in the /intermediate/ folder
-* Preprocessing
-  * PurdueProject.m is a class object with various properties, e.g. the data file locations
+* src/data
+  * Source code for analysis of the data (paper_control_analysis.m) and for structuring a project (ControlProject.m)
+  * Classical (non-control) analysis is in the file: paper_fft_analysis.m
+  * These are organized to be run in sections marked with "%%", and will give an error if run directly
+  * These will plot some examples, but NOT the paper figures
+  * The main output of this section is intermediate products; See src/plot
+* src/explore
+  * Additional files similar to src/data, but not included in the paper 
+* src/plot
+  * Scripts for producing the paper figures (paper_plots.m), plus helper functions
+  * Note that additional formatting was applied after output by MATLAB to achieve the final paper version
+* src/util
+  * Additional utility functions
 
 
 ### /intermediate/

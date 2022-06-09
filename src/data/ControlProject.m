@@ -1,4 +1,4 @@
-classdef PurdueProject
+classdef ControlProject
 % Various file paths and whatnot for the Purdue project
 %
 %
@@ -82,7 +82,7 @@ classdef PurdueProject
     end
     
     methods
-        function self = PurdueProject(dat_foldername, dat_subfolders)
+        function self = ControlProject(dat_foldername, dat_subfolders)
             if exist('dat_foldername', 'var') && ~isempty(dat_foldername)
                 self.dat_foldername = dat_foldername;
             else

@@ -1,6 +1,6 @@
 %% Shared setup
 %%
-pp = PurdueProject();
+pp = ControlProject();
 
 offsets = normrnd(0, 0.05, 250, 1);
 % Time delay embedding shortens the time series, so this should align the

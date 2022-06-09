@@ -1,6 +1,6 @@
 %% Shared setup
 %%
-pp = PurdueProject();
+pp = ControlProject();
 
 fig_opt = {'DefaultAxesFontSize', 24, 'WindowState', 'Maximized'};
 

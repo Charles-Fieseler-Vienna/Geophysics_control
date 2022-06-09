@@ -13,7 +13,7 @@
 % Dependencies
 %   .m files, .mat files, and MATLAB products required:(updated on 05-Dec-2019)
 %         MATLAB (version 9.4)
-%         PurdueProject.m
+%         ControlProject.m
 %         time_delay_embed.m
 %
 %   See also: OTHER_FUNCTION_NAME
@@ -30,7 +30,7 @@
 %% 1: Data intro
 % Example datasets that display clear features
 %   Note: All from Distributed dataset
-pp = PurdueProject();
+pp = ControlProject();
 % which_dataset = 8;
 % fnames = pp.get_borehole_fnames(which_dataset);
 %% Explore many waveforms
@@ -51,7 +51,7 @@ end
 %% Basic trials for SRA
 
 % Pick one dataset
-pp = PurdueProject();
+pp = ControlProject();
 which_dataset = 7;
 which_file = 5;
 
@@ -158,7 +158,7 @@ xlabel('Iteration')
 %% Plot as a function of downsampling
 
 % Same base dataset
-pp = PurdueProject();
+pp = ControlProject();
 which_dataset = 7;
 which_file = 5;
 
@@ -245,7 +245,7 @@ xlabel('Iteration')
 %% Plot for several data files
 
 % Same base dataset
-pp = PurdueProject();
+pp = ControlProject();
 which_dataset = 7;
 
 fnames = pp.get_borehole_fnames(which_dataset);
@@ -349,7 +349,7 @@ saveas(f2, fname);
 %% Plot for one data file, different low-pass
 
 % Same base dataset
-pp = PurdueProject();
+pp = ControlProject();
 which_dataset = 7;
 
 fnames = pp.get_borehole_fnames(which_dataset);
@@ -468,7 +468,7 @@ saveas(f2, fname);
 %% Plot for several data files
 
 % Same base dataset
-pp = PurdueProject();
+pp = ControlProject();
 % which_dataset = 'mortar_fnames';
 which_dataset = 'distributed_fnames';
 % which_dataset = 'localized_fnames';
@@ -724,7 +724,7 @@ opt = {'CovarianceType','diagonal', ...
 
 %% Return to power spectrum: can you tell events apart?
 %% Data
-pp = PurdueProject();
+pp = ControlProject();
 % which_dataset = 'mortar_fnames';
 which_dataset = 'distributed_fnames';
 % which_dataset = 'localized_fnames';

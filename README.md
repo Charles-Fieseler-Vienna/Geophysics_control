@@ -5,8 +5,8 @@
 
 There are two steps required:
 * Run the setup_control_analysis.m file, or manually add the folders to your MATLAB path.
-* Go to /src/ControlProject.m and change the "dat_foldername" property to point to the location of the data files.
-  * In addition, if the subfolders are different than they appear in the dropbox, then the "dat_subfolders" array will need to be updated
+* Go to /src/ControlProject.m and change the "dat_foldername" property to point to the data files.
+  * In addition, "intermediate_foldername" should be updated to a relevant temporary folder
 
 ## Overview of code structure
 

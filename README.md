@@ -26,14 +26,7 @@ This folder includes the source code, which is split up into four folders:
   * Note that additional formatting was applied after output by MATLAB to achieve the final paper version
 * src/util
   * Additional utility functions
-
-
-### /intermediate/
-This folder includes intermediate data products, some of which take hours (on my laptop) to reproduce. 
-The analysis functions needed to reproduce these files are not included yet.
-
-In addition, this contains example indices for the paper subpanels.
-
+  
 
 ## Reproducing paper figures
 

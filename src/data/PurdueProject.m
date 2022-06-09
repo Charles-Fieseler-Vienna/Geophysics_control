@@ -32,13 +32,20 @@ classdef PurdueProject
     properties (SetAccess = private)
         % Go straight to dropbox instead
 %         dat_foldername = '../dat/ae_data/'
-        dat_foldername = "C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/"
+%         dat_foldername = "C:/Users/charl/Dropbox/Kutz_SINDY/AE_Data/"
+        dat_foldername = "E:/Current_work/Purdue_data/"
         dat_subfolders = {...
             "Distributed/Sample_490/", ...
             "Localized/Localized481_waveforms/", ...
             "Mortar/Mortar470_waveforms/", ...
             "Sandstone/Sandstone1/",...
-            "borehole_data_11_17/wvms/"}
+            "borehole_data_11_17/wvms/",...
+            "ABlindtest1/",...
+            "BlindTest2/",...
+            "Mortar/21-042_MOR-7D/",...
+            "Mortar/21-065_MOR-7D/",...
+            "Mortar/21-084_MOR-7D/",...
+            "Mortar/21-044_MOR-7D/"}
         
         dat_foldername2 = "C:/Users/charl/Dropbox/Kutz_SINDY/LCM_v5/examples_with_data/CementcubeData/"
         dat_subfolders2 = {...
@@ -64,7 +71,14 @@ classdef PurdueProject
         mortar_fnames
         localized_fnames
         distributed_fnames
+        unknown_fnames1
+        unknown_fnames2
         
+        % Final figure: more mortar
+        mortar_new1_fnames
+        mortar_new2_fnames
+        mortar_new3_fnames
+        mortar_new4_fnames
     end
     
     methods
@@ -118,6 +132,38 @@ classdef PurdueProject
             % Gets an example localized data file
             fname = string(self.dat_foldername) + ...
                 string(self.dat_subfolders{2});
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.unknown_fnames1(self)
+            fname = string(self.dat_foldername) + ...
+                string(self.dat_subfolders{6});
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.unknown_fnames2(self)
+            fname = string(self.dat_foldername) + ...
+                string(self.dat_subfolders{7});
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.mortar_new1_fnames(self)
+            fname = self.dat_foldername + self.dat_subfolders{8};
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.mortar_new2_fnames(self)
+            fname = self.dat_foldername + self.dat_subfolders{9};
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.mortar_new3_fnames(self)
+            fname = self.dat_foldername + self.dat_subfolders{10};
+            out = self.get_fnames(fname);
+        end
+        
+        function out = get.mortar_new4_fnames(self)
+            fname = self.dat_foldername + self.dat_subfolders{11};
             out = self.get_fnames(fname);
         end
         
@@ -211,6 +257,30 @@ classdef PurdueProject
             end
 
             dat = dat(kept_dat_ind);
+        end
+        
+        function [dat, kept_dat_ind]  =...
+                filter_clipped_data(~, fnames, max_activity_thresh, ...
+                num_datasets)
+            assert(iscell(fnames),...
+                'Must pass cell array of filenames')
+            if ~exist('max_activity_thresh', 'var') || ...
+                    isempty(max_activity_thresh)
+                max_activity_thresh = 9;
+            end
+            if ~exist('num_datasets', 'var')
+                num_datasets = length(fnames);
+            end
+            kept_dat_ind = false(num_datasets, 1);
+            dat = cell(num_datasets, 1);
+            for i = 1:num_datasets
+                dat{i} = readtable(fnames{i});
+                dat{i} = dat{i}{1:end,2}';
+                kept_dat_ind(i) = (max(dat{i}) < max_activity_thresh);
+            end
+
+            dat = dat(kept_dat_ind);
+           
         end
         
     end

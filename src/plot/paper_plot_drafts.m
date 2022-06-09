@@ -560,3 +560,4 @@ end
 %
 out_fname = pp.paper_foldername + "fig2/" + "alternate_violin_distributed";
 saveas(f1a, out_fname + ".png");
+

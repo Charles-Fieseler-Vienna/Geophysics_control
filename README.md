@@ -10,7 +10,7 @@ There are two steps required:
 
 ## Overview of code structure
 
-### /src/
+### src/
 This folder includes the source code, which is split up into three types of files, not including scratch work:
 
 * Produce figures

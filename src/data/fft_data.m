@@ -5,10 +5,12 @@
 % Which input files
 % which_dataset = 'mortar_fnames';
 % which_dataset = 'localized_fnames';
-which_dataset = 'distributed_fnames';
-num_files = 250;
+% which_dataset = 'distributed_fnames';
+which_dataset = 'unknown_fnames2';
+num_files = 250; % 250;
+all_dft_len = 63;% 30;
 
-% Intermediate results
+% Intermediate results (output)
 intermediate_fname = sprintf('spectrogram_%s.mat', which_dataset);
 
 % Class with preprocessing functions
@@ -17,6 +19,10 @@ pp = PurdueProject(data_foldername);
 %% Get filenames
 %---------------------------------------------
 fnames = pp.(which_dataset);
+if length(fnames) < num_files
+    num_files = length(fnames);
+    fprintf("Only found %d files\n", num_files);
+end
 if strcmp(which_dataset, 'localized_fnames')
     [all_dat, kept_ind] = pp.filter_by_activity(fnames);
     kept_ind = find(kept_ind); % Note that the mortar data is much cleaner
@@ -27,7 +33,7 @@ end
 %% Get spectrogram
 %---------------------------------------------
 % num_files = length(kept_ind);
-all_dft = zeros(1024, 30, num_files);
+all_dft = zeros(1024, all_dft_len, num_files);
 all_dat = cell(num_files, 1);
 
 for i = 1:num_files
@@ -95,7 +101,8 @@ end
 fname = [pp.intermediate_foldername, intermediate_fname];
 
 % save(fname, 'kept_ind', 'all_locs', 'all_peaks', 'all_dft', '-v7.3');
-save(fname, 'f', 'all_dat', 'kept_ind', 'all_locs', 'all_peaks', 't_of_dat', '-v7.3');
+% save(fname, 'f', 'all_dat', 'kept_ind', 'all_locs', 'all_peaks', 't_of_dat', '-v7.3');
+save(fname, 'f', 'all_dat', 'kept_ind', 'all_locs', 'all_peaks', '-v7.3');
 
 
 disp('Intermediate data saved')

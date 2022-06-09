@@ -20,6 +20,10 @@ my_f2 = @(dat) dat{ind,2}';
 % my_f2 = @(dat) lowpass(dat{:,2}', 0.8);
 my_f3 = @(X) time_delay_embed(X, num_delays);
 
+% For unknown datasets
+ind_unknown = 1:5:2500;
+my_f_unknown= @(dat) dat{ind_unknown,2}';
+
 error("Please run sections individually")
 
 
@@ -29,20 +33,13 @@ error("Please run sections individually")
 %% Analyze several data files
 
 % Same base dataset
-which_dataset = 'mortar_fnames';
-% which_dataset = 'distributed_fnames';
-% which_dataset = 'localized_fnames';
+which_dataset = "mortar_fnames";
 fnames = pp.(which_dataset);
-% [all_dat, kept_ind] = pp.filter_by_activity(fnames);
-% fnames = fnames(kept_ind);
 my_f1 = @(i) readtable(fnames{i});
 
 this_window = {20};
 
-% which_file = 1:length(fnames);
 which_file = 1:250;
-% which_file = 101:251;
-% which_file = [6];
 %% Calculate the controllers for each data set
 
 all_paths = {};
@@ -81,7 +78,7 @@ for i = 1:length(which_file)
     this_X = my_f3(X);
     % Get accuracy
     [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
-        [], average_with_correlation_coef);
+        [], false, average_with_correlation_coef);
     all_var_explained(i) = this_var;
     all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
     % Get number of control signals
@@ -150,9 +147,10 @@ accuracy = all_var_explained;
 num_events = all_num_events;
 save(fname, 'accuracy', 'num_events');
 %% Data 5: ALL raw data
-fname = pp.intermediate_foldername + "mortar_all_raw_data.mat";
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
 
 save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+% save(fname, 'fnames', '-append');
 %% Plot
 f1 = figure('DefaultAxesFontSize', 24);
 % plot(remove_isolated_spikes(top_U')'+offsets)
@@ -219,21 +217,14 @@ saveas(f2, fname);
 
 % Same base dataset
 which_dataset = 'distributed_fnames';
-% which_dataset = 'localized_fnames';
 fnames = pp.(which_dataset);
-% [all_dat, kept_ind] = pp.filter_by_activity(fnames);
-% fnames = fnames(kept_ind);
 my_f1 = @(i) readtable(fnames{i});
 
 which_file = 1:length(fnames);
 fprintf('%d files remaining\n', length(fnames))
-% which_file = 1:50;
-% which_file = 101:251;
-% which_file = [6];
-%% Test: fewer datasets
-which_file = 1:250;
+% Test: fewer datasets
+% which_file = 1:250;
 
-% this_window = {10};
 %% Calculate the controllers for each data set
 
 all_paths = {};
@@ -274,7 +265,7 @@ for i = 1:length(which_file)
     this_X = my_f3(X);
     % Get accuracy
     [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
-        [], average_with_correlation_coef);
+        [], false, average_with_correlation_coef);
     all_var_explained(i) = this_var;
     all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
     % Get number of control signals
@@ -455,8 +446,19 @@ my_f1 = @(i) readtable(fnames{i});
 
 % which_file = 1:length(fnames);
 fprintf('%d files remaining\n', length(fnames))
-%% Test: fewer datasets
-which_file = 1:250;
+%% Test: copy the valid files into a new folder
+% target_folder = "C:\Users\charl\Documents\MATLAB\Collaborations\Purdue_analysis_git\dat\Localized";
+% 
+% for i = 1:length(fnames)
+%     file_str = fnames{i}(1); % This is actually an array with one string
+%     [filepath, name, ext] = fileparts(file_str);
+%     new_filename = target_folder + name + ext;
+%     disp(new_filename)
+%     
+%     copyfile(file_str, target_folder);
+% end
+% Test: fewer datasets
+% which_file = 1:250;
 % which_file = 1:length(fnames);
 
 % this_window = {10};
@@ -498,7 +500,7 @@ for i = 1:length(which_file)
     this_X = my_f3(X);
     % Get accuracy
     [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U, ...
-        [], average_with_correlation_coef);
+        [], false, average_with_correlation_coef);
     all_var_explained(i) = this_var;
     all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
     % Get number of control signals
@@ -638,3 +640,1027 @@ for i = 1:length(all_var_explained)
     plot(all_paths{i}.U)
     pause
 end
+
+
+%% Final figure with new data:
+%% MORTAR 1 (new)
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "mortar_new1_fnames";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+max_activity_thresh = 9;
+num_datasets = 500;
+[all_dat, kept_ind] = pp.filter_clipped_data(fnames, max_activity_thresh,...
+    num_datasets);
+fnames = fnames(kept_ind);
+
+this_window = {20};
+
+% which_file = 1:250;
+which_file = 1:num_datasets;
+which_file = which_file(kept_ind);
+disp("Finished preprocessing")
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X); % NOTE: these are again a higher frame rate
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], false, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+%     figure;plot(objective_vals)
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+    %         disp(ind)
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Save intermediate data products
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+% Data 4: Scatterplot
+fname = pp.intermediate_foldername + which_dataset + "_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+save(fname, 'fnames', '-append');
+disp("Saved all raw data")
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+% ylim([0, 1.2])
+
+
+% f3 = figure('DefaultAxesFontSize', 24);
+% plot(all_X' + offsets)
+% hold on
+% plot(all_X_reconstructed' + offsets)
+% legend(num2str(all_var_explained))
+
+figure;
+violinplot(all_var_explained);
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save figures
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================
+
+
+%% MORTAR 2 (new)
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "mortar_new2_fnames";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+max_activity_thresh = 9;
+num_datasets = 1000;
+[all_dat, kept_ind] = pp.filter_clipped_data(fnames, max_activity_thresh,...
+    num_datasets);
+fnames = fnames(kept_ind);
+
+this_window = {20};
+
+which_file = 1:num_datasets;
+which_file = which_file(kept_ind);
+disp("Finished preprocessing")
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X); % NOTE: these are again a higher frame rate
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], false, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Save intermediate data products
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+% Data 4: Scatterplot
+fname = pp.intermediate_foldername + which_dataset + "_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+save(fname, 'fnames', '-append');
+disp("Saved all raw data")
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+
+figure;
+% violinplot(all_var_explained);
+violinplot(all_var_explained(1:100));
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================
+
+
+
+%% MORTAR 3 (new)
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "mortar_new3_fnames";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+max_activity_thresh = 2;
+num_datasets = 5000;
+[all_dat, kept_ind] = pp.filter_clipped_data(fnames, max_activity_thresh,...
+    num_datasets);
+fnames = fnames(kept_ind);
+
+this_window = {20};
+
+which_file = 1:num_datasets;
+which_file = which_file(kept_ind);
+disp("Finished preprocessing")
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X); % NOTE: these are again a higher frame rate
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], false, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Save intermediate data products
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+% Data 4: Scatterplot
+fname = pp.intermediate_foldername + which_dataset + "_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+save(fname, 'fnames', '-append');
+disp("Saved all raw data")
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+
+figure;
+% violinplot(all_var_explained);
+violinplot(all_var_explained(1:100));
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================
+
+
+
+%% MORTAR 4 (new)
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "mortar_new4_fnames";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+max_activity_thresh = 9;
+num_datasets = 5000;
+[all_dat, kept_ind] = pp.filter_clipped_data(fnames, max_activity_thresh,...
+    num_datasets);
+fnames = fnames(kept_ind);
+
+this_window = {20};
+
+which_file = 1:num_datasets;
+which_file = which_file(kept_ind);
+disp("Finished preprocessing")
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X); % NOTE: these are again a higher frame rate
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], false, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Save intermediate data products
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+% Data 4: Scatterplot
+fname = pp.intermediate_foldername + which_dataset + "_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+save(fname, 'fnames', '-append');
+
+disp("Saved all raw data")
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+
+figure;
+% violinplot(all_var_explained);
+violinplot(all_var_explained(1:100));
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================
+
+
+
+
+%% UNKNOWN1
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "unknown_fnames1";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+this_window = {20};
+
+which_file = 1:26;
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], false, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+%     figure;plot(objective_vals)
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+    %         disp(ind)
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Data 1: Example good datasets
+
+ex1 = 3;
+fname = pp.intermediate_foldername + which_dataset + "_ex1.mat";
+
+X = all_X(ex1,:);
+X_recon = all_X_reconstructed(ex1,:);
+U = all_paths{ex1}.U;
+
+save(fname, 'X', 'X_recon', 'U');
+%% Data 2: Another example
+ex2 = 5;
+fname = pp.intermediate_foldername + "mortar_ex2.mat";
+
+X = all_X(ex2,:);
+X_recon = all_X_reconstructed(ex2,:);
+U = all_paths{ex2}.U;
+
+save(fname, 'X', 'X_recon', 'U');
+%% Data 3: Accuracy
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+%% Data 4: Scatterplot
+fname = pp.intermediate_foldername + "mortar_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+%% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+% ylim([0, 1.2])
+
+
+% f3 = figure('DefaultAxesFontSize', 24);
+% plot(all_X' + offsets)
+% hold on
+% plot(all_X_reconstructed' + offsets)
+% legend(num2str(all_var_explained))
+
+figure;
+violinplot(all_var_explained);
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save
+% savefig(f1, 
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================
+
+
+%% UNKNOWN2
+%%
+
+%% Analyze several data files
+
+% Same base dataset
+which_dataset = "unknown_fnames2";
+fnames = pp.(which_dataset);
+my_f1 = @(i) readtable(fnames{i});
+
+this_window = {20};
+norm_of_only_first_dim = true;
+
+which_file = 1:250;
+%% Calculate the controllers for each data set
+
+all_paths = {};
+all_X = [];
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    all_X = [all_X; X];
+    X = my_f3(X);
+    all_paths{i} = learn_control_signals(X, settings);
+end
+%% Calculate best path
+
+for i = 1:length(which_file)
+    
+    fprintf("Controller for iteration %d / %d \n", i, length(which_file))
+    all_paths{i}.calc_best_control_signal(...
+        objective_function, this_window, force_nonempty);
+end
+%% Summary function for how well SRA does
+all_var_explained = zeros(length(which_file),1);
+all_X_reconstructed = [];
+all_num_events = all_var_explained;
+
+average_with_correlation_coef = false;
+
+for i = 1:length(which_file)
+    % Calculate variance explained using the best controller
+    best_U = all_paths{i}.U;
+%     best_U = remove_isolated_spikes(best_U);
+    X = my_f1(which_file(i));
+    X = my_f_unknown(X);
+    this_X = my_f3(X);
+    % Get accuracy
+    [this_var, X_reconstruction] = var_explained_by_dmdc(this_X, best_U,...
+        [], norm_of_only_first_dim, average_with_correlation_coef);
+    all_var_explained(i) = this_var;
+    all_X_reconstructed = [all_X_reconstructed; X_reconstruction(end,:)];
+    % Get number of control signals
+    all_num_events(i) = length(calc_contiguous_blocks(...
+        logical(best_U)));
+end
+%% Save best control signals
+num_top_vals = 1;
+
+% Get values
+ts = 1:(size(all_X,2)-num_delays-1);
+top_U = zeros(length(ts), length(all_paths)*num_top_vals);
+offsets = zeros(1,length(all_paths)*num_top_vals);
+for i = 1:length(all_paths)
+    objective_vals = all_paths{i}.objective_values;
+    
+%     figure;plot(objective_vals)
+    
+    for i2 = 1:num_top_vals
+        % Get single max val
+        [~, max_ind] = max(objective_vals);
+    %         disp(ind)
+        tmp = all_paths{i}.all_U{max_ind};
+        objective_vals(max_ind) = -Inf;
+    
+        % Get corresponding controller
+        U_ind = (i-1)*num_top_vals+i2;
+        disp(U_ind)
+        if num_top_vals == 1
+            offsets(U_ind) = U_ind;
+        else
+            offsets(U_ind) = i2/(num_top_vals + 10) + i;
+        end
+
+        top_U(:,U_ind) = tmp;
+    end
+end
+%% Data 1: Example good datasets
+
+ex1 = 3;
+fname = pp.intermediate_foldername + "mortar_ex1.mat";
+
+X = all_X(ex1,:);
+X_recon = all_X_reconstructed(ex1,:);
+U = all_paths{ex1}.U;
+
+save(fname, 'X', 'X_recon', 'U');
+%% Data 2: Another example
+ex2 = 5;
+fname = pp.intermediate_foldername + "mortar_ex2.mat";
+
+X = all_X(ex2,:);
+X_recon = all_X_reconstructed(ex2,:);
+U = all_paths{ex2}.U;
+
+save(fname, 'X', 'X_recon', 'U');
+%% Data 3: Accuracy
+fname = pp.intermediate_foldername + which_dataset + "_acc.mat";
+
+accuracy = all_var_explained;
+save(fname, 'accuracy');
+%% Data 4: Scatterplot
+fname = pp.intermediate_foldername + "mortar_scatter.mat";
+
+accuracy = all_var_explained;
+num_events = all_num_events;
+save(fname, 'accuracy', 'num_events');
+%% Data 5: ALL raw data
+fname = pp.intermediate_foldername + which_dataset + "_all_raw_data.mat";
+
+save(fname, 'all_X', 'all_X_reconstructed', 'all_paths', 'accuracy');
+%% Plot
+f1 = figure('DefaultAxesFontSize', 24);
+% plot(remove_isolated_spikes(top_U')'+offsets)
+plot(top_U + offsets)
+t1 = sprintf('Top %d control signals (dataset %s)', num_top_vals, which_dataset);
+title(t1)
+xlabel('Iteration')
+
+
+f2 = figure('DefaultAxesFontSize', 24);
+plot((0.5*all_X ./ max(all_X, [], 2))' + offsets)
+t2 = sprintf('Time series (dataset %s)', which_dataset);
+title(t2)
+xlabel('Iteration')
+% ylim([0, 1.2])
+
+
+% f3 = figure('DefaultAxesFontSize', 24);
+% plot(all_X' + offsets)
+% hold on
+% plot(all_X_reconstructed' + offsets)
+% legend(num2str(all_var_explained))
+
+figure;
+violinplot(all_var_explained);
+
+figure;
+scatter(all_var_explained, all_num_events)
+xlabel('Correlation')
+ylabel('NNZ')
+
+axes = [f1.Children, f2.Children];
+linkaxes(axes, 'xy')
+%% Look at the reconstructions one-by-one
+figure
+for i = 1:length(all_var_explained)
+    subplot(211)
+    plot(all_X(i,:))
+    hold on
+    plot(all_X_reconstructed(i,:))
+    hold off
+    title(sprintf("Percent %.2f; nnz %d; file %d", ...
+        all_var_explained(i), all_num_events(i), which_file(i)))
+    subplot(212)
+    plot(all_paths{i}.U)
+    pause
+end
+%% Save
+% savefig(f1, 
+fname = string(pp.intermediate_foldername) + strrep(t1, ' ', '-') + ".png";
+saveas(f1, fname);
+
+fname = string(pp.intermediate_foldername) + strrep(t2, ' ', '-') + ".png";
+saveas(f2, fname);
+
+%==========================================================================

@@ -32,13 +32,13 @@ for i = 1:num_rows
         U = all_paths{i_data}.U;
     end
     
-    plot(ts, X, line_opt{:}, 'color', cmap(i,:))
+    plot(1:length(X), X, line_opt{:}, 'color', cmap(i,:))
     hold on
     if use_reconstructed
         plot(ts2, X_recon, line_opt{:})
         plot(ts3, 0.5*U*max(X) - max(abs(X)), 'k', line_opt{:})
     end
-    xlim([1,200])
+    xlim([1,400])
     ylim([-max(abs(X)), max(abs(X))])
     yticks([])
     
@@ -47,6 +47,8 @@ for i = 1:num_rows
     
     if i==1
         title(top_title_str)
+%         title(top_title_str, 'Units', 'normalized',...
+%             'Position', [0.5, -0.1, 0]);
     end
     if i<num_rows
         xticks([])

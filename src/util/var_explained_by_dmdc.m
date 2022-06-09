@@ -1,5 +1,5 @@
 function [perc, X_reconstruction] = var_explained_by_dmdc(X, U, A,...
-    average_with_correlation_coef)
+    norm_of_only_first_dim, average_with_correlation_coef)
 % Currently: returns the average of the variance explained and the
 % correlation coefficient
 %
@@ -27,10 +27,13 @@ if average_with_correlation_coef
 end
 
 % Test: just return L2 error
-total_norm = norm(X_clean);
-% fprintf("The signal was determined to have %.2f percent signal\n",...
-%     total_norm / norm(X));
-perc2 = 1 - (norm(X_reconstruction - X) / total_norm);
+if norm_of_only_first_dim
+    total_norm = norm(X_clean(1,:));
+    perc2 = 1 - (norm(X_reconstruction(1,:) - X(1,:)) / total_norm);
+else
+    total_norm = norm(X_clean);
+    perc2 = 1 - (norm(X_reconstruction - X) / total_norm);
+end
 
 if average_with_correlation_coef
     perc = mean([perc1, perc2]);

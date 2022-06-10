@@ -35,26 +35,7 @@ classdef ControlProject
         dat_subfolders = {...
             "Distributed/Sample_490/", ...
             "Localized/Localized481_waveforms/", ...
-            "Mortar/Mortar470_waveforms/", ...
-            "Sandstone/Sandstone1/",...
-            "borehole_data_11_17/wvms/",...
-            "ABlindtest1/",...
-            "BlindTest2/",...
-            "Mortar/21-042_MOR-7D/",...
-            "Mortar/21-065_MOR-7D/",...
-            "Mortar/21-084_MOR-7D/",...
-            "Mortar/21-044_MOR-7D/"}
-        
-        dat_foldername2 = "C:/Users/charl/Dropbox/Kutz_SINDY/LCM_v5/examples_with_data/CementcubeData/"
-        dat_subfolders2 = {...
-            "05MHz-06262020/r/", ...
-            "05MHz-06262020/t/", ...
-            "1MHz-06262020/r/", ...
-            "1MHz-06262020/t/", ...
-            "5MHz-06262020/r/", ...
-            "5MHz-06262020/t/", ...
-            "10MHz-06252020/r/", ...
-            "10MHz-06252020/t/"}
+            "Mortar/Mortar470_waveforms/"}
         
         % For intermediate variables
         intermediate_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/Purdue_analysis_git/intermediate/'
@@ -98,12 +79,6 @@ classdef ControlProject
             fprintf('%s\n',self.dat_subfolders{:})
             disp('')
         end
-        
-        function out = get_borehole_fnames(self, ind)
-            fname = self.dat_foldername2 + ...
-                self.dat_subfolders2{ind};
-            out = self.get_fnames(fname);
-        end
     end
     
     methods % For dependent variables
@@ -132,45 +107,6 @@ classdef ControlProject
                 string(self.dat_subfolders{2});
             out = self.get_fnames(fname);
         end
-        
-        function out = get.unknown_fnames1(self)
-            fname = string(self.dat_foldername) + ...
-                string(self.dat_subfolders{6});
-            out = self.get_fnames(fname);
-        end
-        
-        function out = get.unknown_fnames2(self)
-            fname = string(self.dat_foldername) + ...
-                string(self.dat_subfolders{7});
-            out = self.get_fnames(fname);
-        end
-        
-        function out = get.mortar_new1_fnames(self)
-            fname = self.dat_foldername + self.dat_subfolders{8};
-            out = self.get_fnames(fname);
-        end
-        
-        function out = get.mortar_new2_fnames(self)
-            fname = self.dat_foldername + self.dat_subfolders{9};
-            out = self.get_fnames(fname);
-        end
-        
-        function out = get.mortar_new3_fnames(self)
-            fname = self.dat_foldername + self.dat_subfolders{10};
-            out = self.get_fnames(fname);
-        end
-        
-        function out = get.mortar_new4_fnames(self)
-            fname = self.dat_foldername + self.dat_subfolders{11};
-            out = self.get_fnames(fname);
-        end
-        
-%         function out = get.borehole_fnames(self)
-%             % Gets borehole data
-%             fname = string(self.dat_foldername) + ...
-%                 string(self.dat_subfolders{5});
-%             out = self.get_fnames(fname);
-%         end
         
         function out = get_fnames(~, fname)
             tmp = dir(fname);
@@ -239,6 +175,8 @@ classdef ControlProject
             % Events that have activity near the maximum level of 10 are
             % actually 'Active Sensing Tests' (ASTs), as opposed to
             % spontaneous events
+            %
+            % NOTE: this is not used in the paper
             assert(iscell(fnames),...
                 'Must pass cell array of filenames')
             if ~exist('min_activity_thresh', 'var') || ...

@@ -21,3 +21,4 @@ src/external_toolboxes/
 
 # Pycharm
 .idea/*
+/dat/

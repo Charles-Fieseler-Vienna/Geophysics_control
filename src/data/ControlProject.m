@@ -38,11 +38,11 @@ classdef ControlProject
             "Mortar/Mortar470_waveforms/"}
         
         % For intermediate variables
-        intermediate_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/Purdue_analysis_git/intermediate/'
+        intermediate_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/intermediate/'
         
         %
-        presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/AGU_2020/';
-        paper_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/Purdue_analysis_git/figures_paper/';
+        presentation_foldername = 'C:/Users/charl/Documents/Current_work/Presentations/';
+        paper_foldername = 'C:/Users/charl/Documents/MATLAB/Collaborations/figures_paper/';
     end
     
     properties (Dependent)

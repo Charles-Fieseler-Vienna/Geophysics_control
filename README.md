@@ -28,9 +28,27 @@ This folder includes the source code, which is split up into four folders:
 * src/util
   * Additional utility functions
 
+### dat/
+
+Contains raw .csv files used to produce the intermediate files.
+Each subfolder should have a properly set up path in ControlProject.m
+
+#### Note on filtering outliers
+
+The "Localized" folder contains a copy "Localized_filtered"
+This folder only contains time series with maximum activity (amplitude) above a hard threshold, and is a subset of "Localized"
+In the paper the filter threshold was set to 0.15, which was found to be approximately the noise floor of the sensors.
+In other words, time series with no discernable events above noise were removed.
+
 ### intermediate/
 
 Contains intermediate products produced by src/data scripts and needed by paper_plots.m
+
+There are 3 types of files:
+
+1. *_acc.mat - These contain reconstruction accuracies for each of the sample times as calculated by the main algorithm in the paper
+2. *_all_raw_data.mat - These contain the original time series corresponding to the above files
+3. spectrogram_*.mat - These contain the frequencies and relevant information for the FFT (classical analysis) portions
 
 ## Reproducing paper figures
 

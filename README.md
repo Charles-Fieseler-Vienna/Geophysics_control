@@ -1,12 +1,18 @@
 
 ## Analysis of Geophysical Acoustic Emissions
 
-## Getting started
+## Reproducing paper figures
 
 There are two steps required:
 * Run the setup_control_analysis.m file, or manually add the folders to your MATLAB path.
 * Go to /src/ControlProject.m and change the "dat_foldername" property to point to the data files.
   * In addition, "intermediate_foldername" should be updated to a relevant temporary folder
+
+## Analyzing new data
+
+If you are interested in analyzing new data using this method, then the core code with examples is here:
+
+https://github.com/Charles-Fieseler/Learning_Control_Signals_MATLAB
 
 ## Overview of code structure
 

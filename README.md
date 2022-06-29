@@ -35,10 +35,17 @@ This folder includes the source code, which is split up into four folders:
 ### dat/
 
 Empty by default.
-Please download raw .csv files as referenced in the paper.
+Please download raw .csv files from this [location](https://doi.org/10.4231/4K64-4818 ).
 These which are used to produce the intermediate files described below.
-
 Each subfolder should have a properly set up path in ControlProject.m
+
+#### Further details on the raw data
+
+Data: The acoustic emission waveforms collected during the monitoring of moisture loss (under ambient laboratory conditions), in synthetic rock samples composed of OPC and sand, and OPC, sand, and distributed or localized masses of montmorillonite clay are provided by CAM and LJPN, and is hosted by Purdue University Research Repository (PURR) Publications. The publicly accessible version 1.0 publication bundle of the ”Data for Characterization of Acoustic Emissions from Analogue Rocks using Sparse Regression‐DMDc” can be found with the following information: Publication repository: Data for Characterization of Acoustic Emissions from Analogue Rocks using Sparse Regression‐DMDc v. 1.0 (#4077): https://doi.org/10.4231/4K64-4818 
+
+url: https://purr.purdue.edu/publications/4077/1 
+
+Licensed under CC0 1.0 Universal
 
 #### Note on filtering outliers
 

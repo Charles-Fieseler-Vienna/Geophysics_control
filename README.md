@@ -25,8 +25,6 @@ This folder includes the source code, which is split up into four folders:
   * These are organized to be run in sections marked with "%%", and will give an error if run directly
   * These will plot some examples, but NOT the paper figures
   * The main output of this section is intermediate products; See src/plot
-* src/explore
-  * Additional files similar to src/data, but not included in the paper 
 * src/plot
   * Scripts for producing the paper figures (paper_plots.m), plus helper functions
   * This is organized to be run in sections marked with "%%", and will give an error if run directly

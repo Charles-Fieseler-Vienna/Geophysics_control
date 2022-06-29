@@ -36,7 +36,10 @@ This folder includes the source code, which is split up into four folders:
 
 ### dat/
 
-Contains raw .csv files used to produce the intermediate files.
+Empty by default.
+Please download raw .csv files as referenced in the paper.
+These which are used to produce the intermediate files described below.
+
 Each subfolder should have a properly set up path in ControlProject.m
 
 #### Note on filtering outliers
